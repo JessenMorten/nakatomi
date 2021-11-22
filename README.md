@@ -1,5 +1,7 @@
 # 🎄 nakatomi 🎄
 
+[![Go](https://github.com/JessenMorten/nakatomi/actions/workflows/go.yml/badge.svg?branch=master&event=push)](https://github.com/JessenMorten/nakatomi/actions/workflows/go.yml)
+
 ## Why?
 
 **Fact:** Everyone wants to watch Die Hard every year at christmas time.
