@@ -2,33 +2,68 @@ package config
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"strings"
+
+	"github.com/JessenMorten/nakatomi/internal/logging"
 )
 
 type Config struct {
+	LogLevel            logging.LogLevel
 	Environment         string
 	GetChannelsEndpoint string
 	GetListingsEndpoint string
 }
 
+type jsonConfig struct {
+	LogLevel    string
+	Environment string
+}
+
 func LoadConfigurationFromFile() (*Config, error) {
-	config := Config{
-		Environment: "Development",
-	}
-	shh(&config)
+	// Create json config
+	config := jsonConfig{}
 
+	// Read config file
 	data, err := ioutil.ReadFile("config.json")
-
 	if err != nil {
 		return nil, err
 	}
 
+	// Deserialize json
 	err = json.Unmarshal(data, &config)
 	if err != nil {
 		return nil, err
 	}
 
-	return &config, nil
+	// Parse log level
+	logLevel, err := parseLogLevel(config.LogLevel)
+	if err != nil {
+		return nil, err
+	}
+
+	// Create config
+	realConfig := Config{}
+	realConfig.LogLevel = logLevel
+	shh(&realConfig)
+	return &realConfig, nil
+}
+
+func parseLogLevel(logLevel string) (logging.LogLevel, error) {
+	upper := strings.ToUpper(logLevel)
+
+	if upper == "ERROR" {
+		return logging.Error, nil
+	} else if upper == "WARINNG" {
+		return logging.Warning, nil
+	} else if upper == "INFORMATION" {
+		return logging.Information, nil
+	} else if upper == "DEBUG" {
+		return logging.Debug, nil
+	} else {
+		return -1, fmt.Errorf("failed to parse log level: '%v'", logLevel)
+	}
 }
 
 func shh(config *Config) {

@@ -44,6 +44,7 @@ type channel struct {
 
 func (h httpTvGuide) Search(title string) ([]TvListing, error) {
 	// Get all channels
+	h.logger.Information("Searching for listings containing '%v'", title)
 	url := h.config.GetChannelsEndpoint
 	channelsResponse := getChannelsResponse{}
 	err := h.getFromJson(url, &channelsResponse)
