@@ -2,7 +2,7 @@ package tvguide
 
 import (
 	"encoding/json"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 	"time"
@@ -106,7 +106,7 @@ func (h httpTvGuide) getFromJson(url string, v interface{}) error {
 	}
 
 	// Return serialized result
-	body, err := io.ReadAll(response.Body)
+	body, err := ioutil.ReadAll(response.Body)
 
 	if err != nil {
 		return err
