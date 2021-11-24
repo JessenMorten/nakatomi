@@ -2,7 +2,7 @@ package tvguide
 
 import (
 	"encoding/json"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 	"time"
@@ -46,7 +46,7 @@ func (h httpTvGuide) Search(title string) ([]TvListing, error) {
 	// Get all channels
 	url := h.config.GetChannelsEndpoint
 	channelsResponse := getChannelsResponse{}
-	err := getFromJson(url, &channelsResponse)
+	err := h.getFromJson(url, &channelsResponse)
 
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (h httpTvGuide) Search(title string) ([]TvListing, error) {
 	for _, channel := range channelsResponse.Channels {
 		url = h.config.GetListingsEndpoint + date.Format("2006-01-02") + "?ch=" + channel.Id
 		listingsResponse := []getListingsResponse{}
-		err := getFromJson(url, &listingsResponse)
+		err := h.getFromJson(url, &listingsResponse)
 		if err != nil {
 			return nil, err
 		}
@@ -85,8 +85,9 @@ func (h httpTvGuide) Search(title string) ([]TvListing, error) {
 	return results, nil
 }
 
-func getFromJson(url string, v interface{}) error {
+func (h httpTvGuide) getFromJson(url string, v interface{}) error {
 	// Create request
+	h.logger.Debug("GET %v", url)
 	client := &http.Client{}
 	request, err := http.NewRequest("GET", url, nil)
 
@@ -104,6 +105,11 @@ func getFromJson(url string, v interface{}) error {
 	}
 
 	// Return serialized result
-	body, err := ioutil.ReadAll(response.Body)
+	body, err := io.ReadAll(response.Body)
+
+	if err != nil {
+		return err
+	}
+
 	return json.Unmarshal(body, &v)
 }
