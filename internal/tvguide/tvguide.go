@@ -23,3 +23,9 @@ func NewHttpTvGuide(logger logging.Logger, config config.Config) TvGuide {
 		config: config,
 	}
 }
+
+func NewDummyTvGuide(logger logging.Logger) TvGuide {
+	return dummyTvGuide{
+		logger: logger,
+	}
+}

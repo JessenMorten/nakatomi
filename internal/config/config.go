@@ -46,6 +46,7 @@ func LoadConfigurationFromFile() (*Config, error) {
 	// Create config
 	realConfig := Config{}
 	realConfig.LogLevel = logLevel
+	realConfig.Environment = config.Environment
 	shh(&realConfig)
 	return &realConfig, nil
 }

@@ -15,15 +15,22 @@ func main() {
 
 	// Setup dependencies
 	logger := logging.NewConsoleLogger(config.LogLevel, "main")
-	tvguide := tvguide.NewHttpTvGuide(
-		logging.NewConsoleLogger(config.LogLevel, "tvguide"),
-		*config,
-	)
+	var g tvguide.TvGuide
+	if config.Environment == "Production" {
+		g = tvguide.NewHttpTvGuide(
+			logging.NewConsoleLogger(config.LogLevel, "http-tvguide"),
+			*config,
+		)
+	} else {
+		g = tvguide.NewDummyTvGuide(
+			logging.NewConsoleLogger(config.LogLevel, "dummy-tvguide"),
+		)
+	}
 
 	// Start application
 	logger.Information("Nakatomi is running in '%v' environment", config.Environment)
 
-	results, err := tvguide.Search("Die Hard")
+	results, err := g.Search("Die Hard")
 
 	if err != nil {
 		logger.Error("Search failed: %v", err)
